@@ -10,6 +10,8 @@ function generate(node) {
                 return `${node.declarator || 'var'} ${generate(node.identifier)}${node.value ? ' = ' + generate(node.value) : ''};`;
             case 'ReturnStatement':
                 return `return ${generate(node.argument)};`;
+            case 'IfStatement':
+                return `if (${generate(node.test)}) {${node.consequent.body.map(generate).join('\n')}}${node.alternate ? ` else {${node.alternate.body.map(generate).join('\n')}}` : ''}`;
             case 'AssignmentExpression':
                 return `${generate(node.identifier)} = ${generate(node.value)};`;
             case 'CallExpression':

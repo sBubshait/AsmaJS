@@ -25,6 +25,8 @@ var parse = (tokens) => {
             case 'Keyword':
                 if (getToken() && getToken().value === 'return')
                     return traverseReturnStatement();
+                else if (getToken() && getToken().value === 'if')
+                    return traverseIfStatement();
                 return traverse();
             default:
               return traverse();
@@ -66,6 +68,50 @@ var parse = (tokens) => {
             type: 'ReturnStatement',
             argument: argument
         };
+    }
+
+    function traverseIfStatement() {
+        current++; // skip if
+        validateToken('left_parenthesis');
+        current++;
+        var condition = traverse();
+        validateToken('right_parenthesis');
+        current++;
+        validateToken('open_brace');
+        current++;
+        var consequent = traverseBlockStatement();
+        let alternate = null;
+        
+        if (getToken().type === 'Keyword' && getToken().value === 'else') {
+            current++;
+            validateToken('open_brace');
+            current++;
+            alternate = traverseBlockStatement();
+        }
+
+
+        return {
+            type: 'IfStatement',
+            test: condition,
+            consequent,
+            alternate
+        }
+
+    }
+
+    function traverseBlockStatement() {
+        var body = [];
+        while (getToken().type !== 'close_brace' && !isEnd()) {
+            body.push(traverseStatement());
+        }
+
+        validateToken('close_brace');
+        current++;
+
+        return {
+            type: 'BlockStatement',
+            body: body
+        }
     }
 
     // traverse expressions main function. Starts from the lowest precedence and works its way up.
@@ -195,7 +241,7 @@ var parse = (tokens) => {
         if (getToken().type === 'left_parenthesis') {
           call_expr = parseCallExpr(call_expr);
         }
-    
+        current++;
         return call_expr;
     }
 
@@ -236,7 +282,8 @@ var parse = (tokens) => {
           ? []
           : parseArgumentsList();
 
-          validateToken('right_parenthesis');
+        validateToken('right_parenthesis');
+        current++;
         return args;
     }
     
