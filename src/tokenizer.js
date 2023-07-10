@@ -1,3 +1,5 @@
+// This is the lexr part of the compiler. It takes the character stream and converts it into tokens.
+
 const arabicLettersRegex = /^[\u0621-\u064A]$/
 const arabicNumeralsRegex = /^[\u0660-\u0669]$/
 const variableDeclarators = ['var', 'const'];
@@ -73,6 +75,37 @@ function tokenizer (input) {
             continue;
         }
 
+        if (char === '>') {
+            tokens.push({
+                type: 'boolean_operator',
+                value: '>',
+            });
+            current++;
+            continue;
+        }
+        if (char === '<') {
+            tokens.push({
+                type: 'boolean_operator',
+                value: '<',
+            });
+            current++;
+            continue;
+        }
+
+        if (char === '!') {
+            if (current < input.length - 1 && input[current + 1] === '=') {
+                tokens.push({
+                    type: 'boolean_operator',
+                    value: '!=',
+                });
+                current += 2;
+                continue;
+            }
+            // currently only supports !=
+            throw new TypeError('Illegal Not Equal');
+        }
+
+
 
          if (/\s/.test(char)) {
             current++;
@@ -119,8 +152,20 @@ function tokenizer (input) {
         }
 
         if (char === '=') {
+            // check if it's a comparison operator
+            if (current < input.length - 1 && input[current + 1] === '=') {
+                if (current < input.length - 2 && input[current + 2] === '=') {
+                    throw new TypeError('Illegal Equal after two ==');
+                }
+                tokens.push({
+                    type: 'boolean_operator',
+                    value: '==',
+                });
+                current += 2;
+                continue;
+            }
             tokens.push({
-                type: 'equal',
+                type: 'assignment_operator',
                 value: '=',
             });
             current++;

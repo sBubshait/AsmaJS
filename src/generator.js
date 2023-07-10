@@ -1,4 +1,5 @@
 // generate JS code from AST
+import { generateNativeFunctions } from './nativeFunctions.js';
 
 function generate(node) {
 
@@ -11,6 +12,8 @@ function generate(node) {
                 return `${generate(node.identifier)} = ${generate(node.value)};`;
             case 'CallExpression':
                 return `(${node.params.map(generate).join(', ')})`;
+            case 'NativeCallExpr':
+                return generateNativeFunctions(node);
             case 'NumberLiteral':
                 return node.value;
             case 'StringLiteral':

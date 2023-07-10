@@ -1,3 +1,5 @@
+import {nativeFunctions, nativeFunctionsArabic} from './nativeFunctions.js';
+
 var parse = (tokens) => {
     let current = 0;
 
@@ -31,9 +33,9 @@ var parse = (tokens) => {
     
     function traverseAssignment() {
         var left = traverseObject();
-        if (getToken().type === 'equal' && left.type === 'Identifier') {
+        if (getToken().type === 'assignment_operator' && left.type === 'Identifier') {
             current++;
-            var right = traverseAdditive();
+            var right = traverseBooleanOperators();
             return {
                 type: 'AssignmentExpression',
                 identifier: left,
@@ -56,7 +58,7 @@ var parse = (tokens) => {
                 identifier: identifier
             };
         }
-        validateToken('equal');
+        validateToken('assignment_operator');
         current++;
         var value = traverse();
         validateToken('semicolon');
@@ -98,7 +100,24 @@ var parse = (tokens) => {
                 type: 'ObjectExpression',
                 properties: properties
             }
-        }else return traverseAdditive();
+        }else return traverseBooleanOperators();
+    }
+
+    function traverseBooleanOperators() {
+        var parsed = traverseAdditive();
+        while (!isEnd() && getToken().type === 'boolean_operator') {
+            var operator = getToken().value;
+            current++;
+            var right = traverseAdditive();
+            parsed = {
+                type: 'BinaryExpression',
+                operator: operator,
+                left: parsed,
+                right: right,
+            };
+        }
+
+        return parsed;
     }
 
     function traverseAdditive() {
@@ -146,12 +165,17 @@ var parse = (tokens) => {
         return member;
     }
 
-    function parseCallExpr(caller) {
+    function parseCallExpr(callee) {
+        
         let call_expr = {
           type: "CallExpr",
-          caller,
+          callee,
           args: parseArgs(),
         };
+        if (callee.type == "Identifier" && (nativeFunctions.includes(callee.value) || nativeFunctionsArabic.includes(callee.value))) {
+            call_expr.type = "NativeCallExpr";
+            call_expr.callee = nativeFunctions.includes(callee.value) ? callee : {type: callee.type, value: nativeFunctions[nativeFunctionsArabic.indexOf(callee.value)]};
+        }
     
         if (getToken().type === 'left_parenthesis') {
           call_expr = parseCallExpr(call_expr);
