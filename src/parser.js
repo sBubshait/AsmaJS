@@ -278,17 +278,35 @@ var parse = (tokens) => {
         return call_expr;
     }
 
+    function parseArgs() {
+        validateToken('left_parenthesis');
+        current++; 
+        if (getToken().type === 'right_parenthesis') {
+            current++;
+            return [];
+        }
+
+        const args = [traverseAssignment()];
+        while (getToken().type === 'comma' && !isEnd()) {
+            current++;
+            args.push(traverseAssignment());
+        }
+    
+        validateToken('right_parenthesis');
+        current++;
+
+        return args;
+    }
+   
     function traverseCalleeMember() {
         let object = traversePrimary();
         
-        while (
-          getToken().type === 'dot' || getToken().type === 'open_bracket'
-        ) {
-          current++;
+        while (getToken().type === 'dot' || getToken().type === 'open_bracket') {
           let property;
           let computed;
-    
-          if (getToken().type === 'dot') {
+          current++;
+
+          if (tokens[current - 1].type === 'dot') {
             computed = false;
             property = traversePrimary();
             validateToken('Identifier', property);
@@ -299,7 +317,7 @@ var parse = (tokens) => {
           }
     
           object = {
-            kind: "MemberExpr",
+            type: "MemberExpr",
             object,
             property,
             computed,
@@ -308,27 +326,7 @@ var parse = (tokens) => {
     
         return object;
     }
-    function parseArgs() {
-        validateToken('left_parenthesis');
-        current++;
-        const args = getToken().type === 'right_parenthesis'
-          ? []
-          : parseArgumentsList();
-
-        validateToken('right_parenthesis');
-        current++;
-        return args;
-    }
     
-    function parseArgumentsList() {
-        const args = [traverseAssignment()];
-        while (getToken().type === 'comma' && !isEnd()) {
-            current++;
-            args.push(traverseAssignment());
-        }
-    
-        return args;
-    }
 
     function traverseUnaryExpressions() {
         if (getToken().type === 'not_operator') {
@@ -364,6 +362,11 @@ var parse = (tokens) => {
         }
         
         if (token.type === 'Identifier') {
+            current++;
+            return token;
+        }
+
+        if (token.type === 'StringLiteral') {
             current++;
             return token;
         }

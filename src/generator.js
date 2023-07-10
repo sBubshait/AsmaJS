@@ -2,7 +2,9 @@
 import { generateNativeFunctions } from './nativeFunctions.js';
 
 function generate(node) {
-
+        if (type === 'Root' && node.body == null) {
+            throw new TypeError('Cannot run empty code.');
+        }
         switch (node.type) {
             case 'Root':
                 return node.body.map(generate).join('\n');
@@ -20,6 +22,8 @@ function generate(node) {
                 return `(${node.params.map(generate).join(', ')})`;
             case 'CallExpr':
                 return `${generate(node.callee)}(${node.args.map(generate).join(', ')})`;
+            case 'MemberExpr':
+                return `${generate(node.object)}.${generate(node.property)}`;
             case 'NativeCallExpr':
                 return generateNativeFunctions(node);
             case 'UnaryExpression':

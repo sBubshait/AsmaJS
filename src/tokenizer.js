@@ -83,6 +83,7 @@ function tokenizer (input) {
             current++;
             continue;
         }
+
         if (char === '<') {
             tokens.push({
                 type: 'boolean_operator',
@@ -114,10 +115,6 @@ function tokenizer (input) {
                 continue;
         }
 
-         if (/\s/.test(char)) {
-            current++;
-            continue;
-        }
          if (/[0-9]/.test(char)  || arabicNumeralsRegex.test(char)) {
             let value = '';
             while (/[0-9]/.test(char) || arabicNumeralsRegex.test(char)) {
@@ -130,6 +127,21 @@ function tokenizer (input) {
             });
             continue;
         }
+
+        if (char === '"' || char === '“' || char === '”') {
+            let value = '';
+            char = input[++current];
+            while (char !== '"' && char !== '“' && char !== '”') {
+                value += char;
+                char = input[++current];
+            }
+            current++;
+            tokens.push({
+                type: 'StringLiteral',
+                value,
+            });
+            continue;
+        }   
         
         if (char === ":") {
             tokens.push({
@@ -180,14 +192,13 @@ function tokenizer (input) {
         }
 
 
-        if (/[a-z]/i.test(char) || arabicLettersRegex.test(char)) {
+        if (/[a-z]/i.test(char) || arabicLettersRegex.test(char) || (char === '$') || (char === '_')) {
             let value = '';
-            while (char && (/[a-z]/i.test(char) || arabicLettersRegex.test(char))) {
-                value += char;
+            while (char && ((/[a-z0-9]/i.test(char) || arabicNumeralsRegex.test(char)) || (char === '$') || (char === '_') || arabicLettersRegex.test(char)) || (char === '-')) {
+                value += convertArabicNumeralsToEnglish(char);
                 char = input[++current];
             }
             if (variableDeclarators.includes(value) || variableDeclaratorsArabic.includes(value)) {
-                current++;
                 var variableDec = variableDeclarators.includes(value) ? value : variableDeclarators[variableDeclaratorsArabic.indexOf(value)];
                 tokens.push({
                     type: 'variableDeclarator',
@@ -197,7 +208,6 @@ function tokenizer (input) {
             }
 
             if (['true', 'false', 'نعم', 'لا'].includes(value)) {
-                current++;
                 tokens.push({
                     type: 'BooleanLiteral',
                     value: ['true', 'نعم'].includes(value) ? true : false
@@ -206,7 +216,6 @@ function tokenizer (input) {
             }
 
             if (keywords.includes(value) || ArabicKeywords.includes(value)) {
-                current++;
                 tokens.push({
                     type: 'Keyword',
                     value: keywords.includes(value) ? value : keywords[ArabicKeywords.indexOf(value)],
@@ -234,6 +243,11 @@ function tokenizer (input) {
                 type: 'multiplicativeOperator',
                 value: char,
             });
+            current++;
+            continue;
+        }
+
+        if (/\s/.test(char)) {
             current++;
             continue;
         }
