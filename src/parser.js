@@ -46,6 +46,7 @@ var parse = (tokens) => {
     }
     
     function traverseVariableDeclaration() {
+        console.log(tokens[current])
         var declarator = validateToken('variableDeclarator');
         current++;
         var identifier = validateToken('Identifier');
@@ -197,7 +198,7 @@ var parse = (tokens) => {
           if (getToken().type === 'dot') {
             computed = false;
             property = parsePrimaryExpr();
-            validateToken(property, 'Identifier');
+            validateToken('Identifier', property);
           } else {
             computed = true;
             property = traverse();
@@ -275,16 +276,7 @@ var parse = (tokens) => {
         throw new TypeError(`Unable to parse. Unknown Token: '${token.value}'`);
     }
 
-    
-
-    function validateToken(expected) {
-        if (!getToken() || getToken().type !== expected) {
-            throw new TypeError(`Expected token '${expected}' but found ${getToken() ? "'" + getToken().type + "'" : "nothing"}.`);
-        }
-        return getToken();
-    }
-
-    function validateToken(token, expected) {
+    function validateToken(expected, token = tokens[current]) {
         if (!token || token.type !== expected) {
             throw new TypeError(`Expected token '${expected}' but found ${token ? "'" + token.type + "'" : "nothing"}.`);
         }
