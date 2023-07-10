@@ -14,6 +14,14 @@ function generate(node) {
                 return `(${node.params.map(generate).join(', ')})`;
             case 'NativeCallExpr':
                 return generateNativeFunctions(node);
+            case 'UnaryExpression':
+                return `${node.operator}${generate(node.argument)}`;
+            case 'BinaryExpression':
+                return `${generate(node.left)} ${node.operator} ${generate(node.right)}`;
+            case 'ObjectExpression':
+                return `{${node.properties.map(generate).join(', ')}}`;
+            case 'Property':
+                return `${generate(node.key)}: ${generate(node.value)}`;
             case 'NumberLiteral':
                 return node.value;
             case 'StringLiteral':
@@ -22,12 +30,6 @@ function generate(node) {
                 return node.value;
             case 'Identifier':
                 return node.value;
-            case 'BinaryExpression':
-                return `${generate(node.left)} ${node.operator} ${generate(node.right)}`;
-            case 'ObjectExpression':
-                return `{${node.properties.map(generate).join(', ')}}`;
-            case 'Property':
-                return `${generate(node.key)}: ${generate(node.value)}`;
             default:
                 throw new TypeError("Unable to generate: " + node.type);
         }

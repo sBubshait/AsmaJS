@@ -186,7 +186,7 @@ var parse = (tokens) => {
     }
 
     function traverseCalleeMember() {
-        let object = traversePrimary();
+        let object = traverseUnaryExpressions();
         
         while (
           getToken().type === 'dot' || getToken().type === 'open_bracket'
@@ -197,7 +197,7 @@ var parse = (tokens) => {
     
           if (getToken().type === 'dot') {
             computed = false;
-            property = parsePrimaryExpr();
+            property = traverseUnaryExpressions();
             validateToken('Identifier', property);
           } else {
             computed = true;
@@ -235,17 +235,37 @@ var parse = (tokens) => {
         return args;
     }
 
+    function traverseUnaryExpressions() {
+        if (getToken().type === 'not_operator') {
+            current++;
+            return {
+                type: 'UnaryExpression',
+                operator: '!',
+                argument: traversePrimary(),
+                prefix: true
+            };
+        }
+        if (getToken().type === 'minus_operator') {
+            current++;
+            return {
+                type: 'UnaryExpression',
+                operator: '-',
+                argument: traversePrimary(),
+                prefix: true
+            };
+        }
+
+        return traversePrimary();
+    }
+
     function traversePrimary() {
         var token = getToken();
         if (!token) return false;
         
 
-        if (token.type === 'text' && ['true', 'false', 'نعم', 'لا'].includes(token.value)) {
+        if (token.type === 'BooleanLiteral') {
             current++;
-            return {
-                type: 'BooleanLiteral',
-                value: true ? ['true', 'نعم'].includes(token.value) : false,
-            }
+            return token;
         }
         
         if (token.type === 'Identifier') {
@@ -273,7 +293,7 @@ var parse = (tokens) => {
         if (token.type === 'semicolon') {
             return;
         }
-        throw new TypeError(`Unable to parse. Unknown Token: '${token.value}'`);
+        throw new TypeError(`Unable to parse. Unknown Token: '${token.value}' of type '${token.type}'`);
     }
 
     function validateToken(expected, token = tokens[current]) {

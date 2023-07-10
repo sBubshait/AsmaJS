@@ -4,7 +4,7 @@ Welcome to AsmaJS, the Arabic-oriented compiled programming language that seamle
 
 ## Features 🚀
 ### Current Features ✅
-- **Basic Binary Expressions**: AsmaJS supports basic binary operations like addition, subtraction, multiplication, and division.
+- **Basic Binary Expressions**: AsmaJS supports basic binary operations like addition, subtraction, multiplication, and division, as well as well as boolean operations like AND, OR, and NOT.
 - **Simple Expressions**: The language can process and evaluate simple arithmetic and logical expressions.
 - **Function Calls**: AsmaJS currently supports function calls, both built-in and user-defined functions.
 - **Objects**: AsmaJS allows object creation and manipulation, extending the power of JavaScript's object-oriented programming to Arabic syntax.

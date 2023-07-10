@@ -94,18 +94,25 @@ function tokenizer (input) {
 
         if (char === '!') {
             if (current < input.length - 1 && input[current + 1] === '=') {
+                if (current < input.length - 2 && input[current + 2] === '=') {
+                    throw new TypeError('Illegal Equal after two ==');
+                }
+
                 tokens.push({
                     type: 'boolean_operator',
                     value: '!=',
                 });
                 current += 2;
                 continue;
+
             }
-            // currently only supports !=
-            throw new TypeError('Illegal Not Equal');
+                tokens.push({
+                    type: 'not_operator',
+                    value: '!',
+                });
+                current++;
+                continue;
         }
-
-
 
          if (/\s/.test(char)) {
             current++;
@@ -189,6 +196,15 @@ function tokenizer (input) {
                 continue;
             }
 
+            if (['true', 'false', 'نعم', 'لا'].includes(value)) {
+                current++;
+                tokens.push({
+                    type: 'BooleanLiteral',
+                    value: ['true', 'نعم'].includes(value) ? true : false
+                });
+                continue;
+            }
+
             if (keywords.includes(value) || ArabicKeywords.includes(value)) {
                 current++;
                 tokens.push({
@@ -220,6 +236,16 @@ function tokenizer (input) {
             current++;
             continue;
         }
+
+        if (char === '-') {
+            tokens.push({
+                type: 'minus_operator',
+                value: char,
+            });
+            current++;
+            continue;
+        }
+
 
         throw new TypeError('Unknown character: ' + char);
     }
