@@ -22,28 +22,15 @@ var parse = (tokens) => {
         switch (getToken().type) {
             case 'variableDeclarator':
               return traverseVariableDeclaration();
+            case 'Keyword':
+                if (getToken() && getToken().value === 'return')
+                    return traverseReturnStatement();
+                return traverse();
             default:
               return traverse();
           }
     }
 
-    function traverse() {
-        return traverseAssignment();
-    }
-    
-    function traverseAssignment() {
-        var left = traverseObject();
-        if (getToken().type === 'assignment_operator' && left.type === 'Identifier') {
-            current++;
-            var right = traverseBooleanOperators();
-            return {
-                type: 'AssignmentExpression',
-                identifier: left,
-                value: right
-            }
-         }
-        return left;
-    }
     
     function traverseVariableDeclaration() {
         console.log(tokens[current])
@@ -70,6 +57,34 @@ var parse = (tokens) => {
             identifier: identifier,
             value: value
         };
+    }
+
+    function traverseReturnStatement() {
+        current++;
+        var argument = traverse();
+        return {
+            type: 'ReturnStatement',
+            argument: argument
+        };
+    }
+
+
+    function traverse() {
+        return traverseAssignment();
+    }
+    
+    function traverseAssignment() {
+        var left = traverseObject();
+        if (getToken().type === 'assignment_operator' && left.type === 'Identifier') {
+            current++;
+            var right = traverseBooleanOperators();
+            return {
+                type: 'AssignmentExpression',
+                identifier: left,
+                value: right
+            }
+         }
+        return left;
     }
 
     function traverseObject() {
@@ -139,11 +154,11 @@ var parse = (tokens) => {
     }
 
     function traverseMultiplicative() {
-        var parsed = traverseCallee();
+        var parsed = traverseUnaryExpressions(); 
         while (getToken() && getToken().type === 'multiplicativeOperator') {
             var operator = getToken().value;
             current++;
-            var right = traverseCallee();
+            var right = traverseUnaryExpressions();
             parsed = {
                 type: 'BinaryExpression',
                 operator: operator,
@@ -159,7 +174,6 @@ var parse = (tokens) => {
         let member = traverseCalleeMember();
     
         if (getToken().type === 'left_parenthesis') {
-          current++;
           return parseCallExpr(member);
         }
     
@@ -186,7 +200,7 @@ var parse = (tokens) => {
     }
 
     function traverseCalleeMember() {
-        let object = traverseUnaryExpressions();
+        let object = traversePrimary();
         
         while (
           getToken().type === 'dot' || getToken().type === 'open_bracket'
@@ -197,7 +211,7 @@ var parse = (tokens) => {
     
           if (getToken().type === 'dot') {
             computed = false;
-            property = traverseUnaryExpressions();
+            property = traversePrimary();
             validateToken('Identifier', property);
           } else {
             computed = true;
@@ -217,11 +231,12 @@ var parse = (tokens) => {
     }
     function parseArgs() {
         validateToken('left_parenthesis');
+        current++;
         const args = getToken().type === 'right_parenthesis'
           ? []
           : parseArgumentsList();
-    
-        validateToken('right_parenthesis');
+
+          validateToken('right_parenthesis');
         return args;
     }
     
@@ -241,7 +256,7 @@ var parse = (tokens) => {
             return {
                 type: 'UnaryExpression',
                 operator: '!',
-                argument: traversePrimary(),
+                argument: traverseCallee(),
                 prefix: true
             };
         }
@@ -250,12 +265,12 @@ var parse = (tokens) => {
             return {
                 type: 'UnaryExpression',
                 operator: '-',
-                argument: traversePrimary(),
+                argument: traverseCallee(),
                 prefix: true
             };
         }
 
-        return traversePrimary();
+        return traverseCallee();
     }
 
     function traversePrimary() {

@@ -8,7 +8,8 @@ Welcome to AsmaJS, the Arabic-oriented compiled programming language that seamle
 - **Simple Expressions**: The language can process and evaluate simple arithmetic and logical expressions.
 - **Function Calls**: AsmaJS currently supports function calls, both built-in and user-defined functions.
 - **Objects**: AsmaJS allows object creation and manipulation, extending the power of JavaScript's object-oriented programming to Arabic syntax.
-- **Variable Declaration*: The language supports variable declaration and assignment, allowing users to store and manipulate data.
+- **Variable Declaration**: The language supports variable declaration and assignment, allowing users to store and manipulate data.
+
 
 ### To-Do List 📝
 Here's what's on the horizon:

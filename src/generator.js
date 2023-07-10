@@ -8,10 +8,14 @@ function generate(node) {
                 return node.body.map(generate).join('\n');
             case 'VariableDeclaration':
                 return `${node.declarator || 'var'} ${generate(node.identifier)}${node.value ? ' = ' + generate(node.value) : ''};`;
+            case 'ReturnStatement':
+                return `return ${generate(node.argument)};`;
             case 'AssignmentExpression':
                 return `${generate(node.identifier)} = ${generate(node.value)};`;
             case 'CallExpression':
                 return `(${node.params.map(generate).join(', ')})`;
+            case 'CallExpr':
+                return `${generate(node.callee)}(${node.args.map(generate).join(', ')})`;
             case 'NativeCallExpr':
                 return generateNativeFunctions(node);
             case 'UnaryExpression':
