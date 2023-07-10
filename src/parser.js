@@ -273,7 +273,8 @@ var parse = (tokens) => {
         if (getToken().type === 'left_parenthesis') {
           call_expr = parseCallExpr(call_expr);
         }
-        current++;
+        if (getToken().type === 'semicolon')
+            current++;
         return call_expr;
     }
 
