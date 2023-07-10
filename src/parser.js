@@ -256,7 +256,7 @@ var parse = (tokens) => {
             return {
                 type: 'UnaryExpression',
                 operator: '!',
-                argument: traverseCallee(),
+                argument: traverseUnaryExpressions(),
                 prefix: true
             };
         }
@@ -265,7 +265,7 @@ var parse = (tokens) => {
             return {
                 type: 'UnaryExpression',
                 operator: '-',
-                argument: traverseCallee(),
+                argument: traverseUnaryExpressions(),
                 prefix: true
             };
         }
