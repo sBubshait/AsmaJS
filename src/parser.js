@@ -1,6 +1,3 @@
-
-
-
 var parse = (tokens) => {
     let current = 0;
 
@@ -205,10 +202,9 @@ var parse = (tokens) => {
     
     function parseArgumentsList() {
         const args = [traverseAssignment()];
-        current++;
         while (getToken().type === 'comma' && !isEnd()) {
-          args.push(traverseAssignment());
-          current++;
+            current++;
+            args.push(traverseAssignment());
         }
     
         return args;
