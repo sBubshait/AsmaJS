@@ -68,7 +68,7 @@ var parse = (tokens) => {
         };
     }
 
-
+    // traverse expressions main function. Starts from the lowest precedence and works its way up.
     function traverse() {
         return traverseAssignment();
     }
@@ -260,7 +260,7 @@ var parse = (tokens) => {
                 prefix: true
             };
         }
-        if (getToken().type === 'minus_operator') {
+        if (getToken().type === 'additiveOperator' && getToken().value === '-') {
             current++;
             return {
                 type: 'UnaryExpression',

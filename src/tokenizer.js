@@ -238,16 +238,6 @@ function tokenizer (input) {
             continue;
         }
 
-        if (char === '-') {
-            tokens.push({
-                type: 'minus_operator',
-                value: char,
-            });
-            current++;
-            continue;
-        }
-
-
         throw new TypeError('Unknown character: ' + char);
     }
 
