@@ -27,6 +27,8 @@ var parse = (tokens) => {
                     return traverseReturnStatement();
                 else if (getToken() && getToken().value === 'if')
                     return traverseIfStatement();
+                else if (getToken() && getToken().value === 'function')
+                    return traverseFunctionDeclaration();
                 return traverse();
             default:
               return traverse();
@@ -112,6 +114,36 @@ var parse = (tokens) => {
             type: 'BlockStatement',
             body: body
         }
+    }
+
+    function traverseFunctionDeclaration() {
+        current++; // skip 'function'
+        var identifier = validateToken('Identifier');
+        current++;
+        validateToken('left_parenthesis');
+        current++;
+        var params = [];
+        while (!isEnd() && getToken().type !== 'right_parenthesis') {
+            params.push(validateToken('Identifier'));
+            current++;
+            if (getToken().type === 'comma') {
+                current++;
+            }
+        }
+        validateToken('right_parenthesis');
+        current++;
+        validateToken('open_brace');
+        current++;
+        var body = traverseBlockStatement();
+
+        return {
+            type: 'FunctionDeclaration',
+            id: identifier,
+            params,
+            body
+        }
+
+        
     }
 
     // traverse expressions main function. Starts from the lowest precedence and works its way up.
@@ -237,7 +269,7 @@ var parse = (tokens) => {
             call_expr.type = "NativeCallExpr";
             call_expr.callee = nativeFunctions.includes(callee.value) ? callee : {type: callee.type, value: nativeFunctions[nativeFunctionsArabic.indexOf(callee.value)]};
         }
-    
+        
         if (getToken().type === 'left_parenthesis') {
           call_expr = parseCallExpr(call_expr);
         }

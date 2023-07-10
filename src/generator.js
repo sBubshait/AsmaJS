@@ -8,6 +8,8 @@ function generate(node) {
                 return node.body.map(generate).join('\n');
             case 'VariableDeclaration':
                 return `${node.declarator || 'var'} ${generate(node.identifier)}${node.value ? ' = ' + generate(node.value) : ''};`;
+            case 'FunctionDeclaration':
+                return `function ${generate(node.id)}(${node.params.map(generate).join(', ')}) {${node.body.body.map(generate).join('\n')}}`;
             case 'ReturnStatement':
                 return `return ${generate(node.argument)};`;
             case 'IfStatement':
