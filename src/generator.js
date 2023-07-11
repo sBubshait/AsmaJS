@@ -21,12 +21,12 @@ function generate(node) {
             case 'ParenthesizedExpression':
                 return `(${node.params.map(generate).join(', ')})`;
             case 'CallExpression':
-                return `${generate(node.callee)}(${node.args.map(generate).join(', ')})`;
+                return `${generate(node.callee)}(${node.arguments.map(generate).join(', ')})`;
             case 'MemberExpression':
                 return `${generate(node.object)}.${generate(node.property)}`;
             case 'LogicalExpression':
                 return `${generate(node.left)} ${node.operator} ${generate(node.right)}`;
-            case 'NativeCallExpr':
+            case 'NativeCallExpression':
                 return generateNativeFunctions(node);
             case 'UnaryExpression':
                 return `${node.operator}${generate(node.argument)}`;

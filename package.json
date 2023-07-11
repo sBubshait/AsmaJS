@@ -1,0 +1,25 @@
+{
+  "name": "asmajs",
+  "version": "1.0.0",
+  "description": "Welcome to AsmaJS, the Arabic-oriented compiled programming language that seamlessly translates into JavaScript. Our goal is to foster linguistic diversity in tech, making coding more accessible for Arabic speakers.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sBubshait/AsmaJS.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sBubshait/AsmaJS/issues"
+  },
+  "homepage": "https://github.com/sBubshait/AsmaJS#readme",
+  "dependencies": {
+    "prompt-sync": "^4.2.0"
+  }
+}

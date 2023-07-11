@@ -439,7 +439,10 @@ var parse = (tokens) => {
 
     const AST = {
         type: 'Root',
-        body: [traverseStatement()],
+        body: [],
+    };
+    while (!isEnd()) {
+        AST.body.push(traverseStatement());
     };
 
     return AST;
