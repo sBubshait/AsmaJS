@@ -28,4 +28,28 @@ In the above example, اسال is the keyword for the prompt function in our lan
 Please note that the اسال function pauses execution of the program until the user responds to the prompt.
 
 
+### toDecimal (الى-عشري) 🔢
+
+
+The `toDecimal` function converts a string to a decimal number. It is used like this:
+
+
+```js
+var decimalNumber = toDecimal("3.14");
+عرف متغير-عشري = الى-عشري("3.14");
+```
+
+
+### toInteger (الى-صحيح) 🔢
+
+
+The `toInteger` function converts a string to an integer number. It is used like this:
+
+
+```js
+var integerNumber = toInteger("3");
+عرف متغير-صحيح = الى-صحيح("3");
+``` 
+
+
 Keep an eye on this space, as we are working hard to add more functions to our Standard Library! 🚀
