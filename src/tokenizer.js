@@ -75,19 +75,21 @@ function tokenizer (input) {
             continue;
         }
 
-        if (char === '>') {
+        if (char === '>' || char === '<') {
+            if (current < input.length - 1 && input[current + 1] === '=') {
+                if (current < input.length - 2 && input[current + 2] === '=') {
+                    throw new TypeError('Illegal Equal after two ==');
+                }
+                tokens.push({
+                    type: 'boolean_operator',
+                    value: `${char}=`,
+                });
+                current += 2;
+                continue;
+            }
             tokens.push({
                 type: 'boolean_operator',
-                value: '>',
-            });
-            current++;
-            continue;
-        }
-
-        if (char === '<') {
-            tokens.push({
-                type: 'boolean_operator',
-                value: '<',
+                value: `${char}`,
             });
             current++;
             continue;
@@ -189,6 +191,21 @@ function tokenizer (input) {
             });
             current++;
             continue;
+        }
+
+        if (char === '&' || char === '|') {
+            if (current < input.length - 1 && (input[current + 1] === '&' || input[current + 1] === '|')) {
+                if (current < input.length - 2 && (input[current + 2] === '&' || input[current + 2] === '|')) {
+                    throw new TypeError(`Illegal ${char} after ${char}${char}`);
+                }
+                tokens.push({
+                    type: 'logical_operator',
+                    value: `${char}${char}`
+                });
+                current += 2;
+                continue;
+            }
+            throw new TypeError('Illegal character: ' + char);
         }
 
 

@@ -2,7 +2,7 @@
 import { generateNativeFunctions } from './nativeFunctions.js';
 
 function generate(node) {
-        if (type === 'Root' && node.body == null) {
+        if (node.type === 'Root' && node.body == null) {
             throw new TypeError('Cannot run empty code.');
         }
         switch (node.type) {
@@ -18,12 +18,14 @@ function generate(node) {
                 return `if (${generate(node.test)}) {${node.consequent.body.map(generate).join('\n')}}${node.alternate ? ` else {${node.alternate.body.map(generate).join('\n')}}` : ''}`;
             case 'AssignmentExpression':
                 return `${generate(node.identifier)} = ${generate(node.value)};`;
-            case 'CallExpression':
+            case 'ParenthesizedExpression':
                 return `(${node.params.map(generate).join(', ')})`;
-            case 'CallExpr':
+            case 'CallExpression':
                 return `${generate(node.callee)}(${node.args.map(generate).join(', ')})`;
-            case 'MemberExpr':
+            case 'MemberExpression':
                 return `${generate(node.object)}.${generate(node.property)}`;
+            case 'LogicalExpression':
+                return `${generate(node.left)} ${node.operator} ${generate(node.right)}`;
             case 'NativeCallExpr':
                 return generateNativeFunctions(node);
             case 'UnaryExpression':
@@ -42,6 +44,8 @@ function generate(node) {
                 return node.value;
             case 'Identifier':
                 return node.value;
+            case 'null':
+                return '';
             default:
                 throw new TypeError("Unable to generate: " + node.type);
         }

@@ -1,5 +1,7 @@
 import {nativeFunctions, nativeFunctionsArabic} from './nativeFunctions.js';
 
+const NULL = {type: 'null', value: null};
+
 var parse = (tokens) => {
     let current = 0;
 
@@ -8,10 +10,7 @@ var parse = (tokens) => {
     }
 
     function getToken() {
-        return tokens[current] || {
-            type: 'null',
-            value: null
-        };
+        return tokens[current] || NULL;
     }
 
     function nextToken() {
@@ -37,7 +36,6 @@ var parse = (tokens) => {
 
     
     function traverseVariableDeclaration() {
-        console.log(tokens[current])
         var declarator = validateToken('variableDeclarator');
         current++;
         var identifier = validateToken('Identifier');
@@ -66,6 +64,9 @@ var parse = (tokens) => {
     function traverseReturnStatement() {
         current++;
         var argument = traverse();
+        if (getToken().type === 'semicolon') {
+            current++;
+        }
         return {
             type: 'ReturnStatement',
             argument: argument
@@ -73,7 +74,7 @@ var parse = (tokens) => {
     }
 
     function traverseIfStatement() {
-        current++; // skip if
+        current++; // skip 'if'
         validateToken('left_parenthesis');
         current++;
         var condition = traverse();
@@ -152,16 +153,50 @@ var parse = (tokens) => {
     }
     
     function traverseAssignment() {
-        var left = traverseObject();
+        var left = traverseLogicalOROperator();
         if (getToken().type === 'assignment_operator' && left.type === 'Identifier') {
             current++;
-            var right = traverseBooleanOperators();
+            var right = traverseAssignment();
             return {
                 type: 'AssignmentExpression',
                 identifier: left,
                 value: right
             }
          }
+        return left;
+    }
+
+    function traverseLogicalOROperator() {
+        var left = traverseLogicalANDOperator();
+        while (!isEnd() && (getToken().type === 'logical_operator' && getToken().value === '||')) {
+            var operator = getToken().value;
+            current++;
+            var right = traverseLogicalANDOperator();
+            left = {
+                type: 'LogicalExpression',
+                operator: operator,
+                left: left,
+                right: right,
+            };
+        }
+
+        return left;
+    }
+
+    function traverseLogicalANDOperator() {
+        var left = traverseObject();
+        while (!isEnd() && (getToken().type === 'logical_operator' && getToken().value === '&&')) {
+            var operator = getToken().value;
+            current++;
+            var right = traverseObject();
+            left = {
+                type: 'LogicalExpression',
+                operator: operator,
+                left: left,
+                right: right,
+            };
+        }
+
         return left;
     }
 
@@ -261,20 +296,20 @@ var parse = (tokens) => {
     function parseCallExpr(callee) {
         
         let call_expr = {
-          type: "CallExpr",
+          type: "CallExpression",
           callee,
-          args: parseArgs(),
+          arguments: parseArgs(),
         };
         if (callee.type == "Identifier" && (nativeFunctions.includes(callee.value) || nativeFunctionsArabic.includes(callee.value))) {
-            call_expr.type = "NativeCallExpr";
+            call_expr.type = "NativeCallExpression";
             call_expr.callee = nativeFunctions.includes(callee.value) ? callee : {type: callee.type, value: nativeFunctions[nativeFunctionsArabic.indexOf(callee.value)]};
         }
         
         if (getToken().type === 'left_parenthesis') {
           call_expr = parseCallExpr(call_expr);
         }
-        if (getToken().type === 'semicolon')
-            current++;
+        // if (getToken().type === 'semicolon')
+        //     current++;
         return call_expr;
     }
 
@@ -317,7 +352,7 @@ var parse = (tokens) => {
           }
     
           object = {
-            type: "MemberExpr",
+            type: "MemberExpression",
             object,
             property,
             computed,
@@ -381,7 +416,7 @@ var parse = (tokens) => {
         if (token.type === 'left_parenthesis') {
             token = tokens[++current];
             const expression = {
-              type: 'CallExpression',
+              type: 'ParenthesizedExpression',
               params: [traverse()]
             };
             validateToken('right_parenthesis');
@@ -389,7 +424,8 @@ var parse = (tokens) => {
             return expression;
         }
         if (token.type === 'semicolon') {
-            return;
+            current++;
+            return NULL;
         }
         throw new TypeError(`Unable to parse. Unknown Token: '${token.value}' of type '${token.type}'`);
     }
