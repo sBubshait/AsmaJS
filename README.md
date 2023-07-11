@@ -39,11 +39,11 @@ After you've installed the prerequisites, you can install AsmaJS by following th
 
 5. You're all set! You can now use the `Arjs` command to run, compile, and interact with AsmaJS code. Here's a quick rundown of the available commands:
 
-    - `Asjs run [file]`: Compile and run the given file
-    - `Asjs compile [file]`: Compile the given file, generating the compiled JavaScript file.
-    - `Asjs repl`: Start the interactive read–eval–print loop
-    - `Asjs rppl`: Start the interactive read-parse-print loop
-    - `Asjs help`: Show the help message
+    - `Arjs run [file]`: Compile and run the given file
+    - `Arjs compile [file]`: Compile the given file, generating the compiled JavaScript file.
+    - `Arjs repl`: Start the interactive read–eval–print loop
+    - `Arjs rppl`: Start the interactive read-parse-print loop
+    - `Arjs help`: Show the help message
 
 ## Features 🚀
 ### Current Features ✅
