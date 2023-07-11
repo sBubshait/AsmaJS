@@ -15,7 +15,7 @@ function generate(node) {
             case 'ReturnStatement':
                 return `return ${generate(node.argument)};`;
             case 'IfStatement':
-                return `if (${generate(node.test)}) {${node.consequent.body.map(generate).join('\n')}}${node.alternate ? ` else {${node.alternate.body.map(generate).join('\n')}}` : ''}`;
+                return generateIfStatement(node);
             case 'AssignmentExpression':
                 return `${generate(node.identifier)} = ${generate(node.value)};`;
             case 'ParenthesizedExpression':
@@ -50,6 +50,18 @@ function generate(node) {
                 throw new TypeError("Unable to generate: " + node.type);
         }
 
+}
+
+function generateIfStatement(node) {
+    let code = `if (${generate(node.test)}) {\n${node.consequent.body.map(generate).join('\n')}\n}`;
+    if (node.alternate) {
+        if (node.alternate.type === 'IfStatement') {
+            code += ` else ${generateIfStatement(node.alternate)}`;
+        } else {
+            code += ` else {\n${node.alternate.body.map(generate).join('\n')}\n}`;
+        }
+    }
+    return code;
 }
 
 export default generate;

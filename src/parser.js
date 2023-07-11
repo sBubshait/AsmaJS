@@ -444,7 +444,7 @@ var parse = (tokens) => {
     
     while(!isEnd()) {
         var stmt = traverseStatement();
-        if (stmt && stmt != NULL) 
+        if (stmt != NULL && stmt) 
             AST.body.push(stmt);
     }
 
