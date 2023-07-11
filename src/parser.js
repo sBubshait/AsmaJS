@@ -6,15 +6,11 @@ var parse = (tokens) => {
     let current = 0;
 
     function isEnd() {
-        return current == tokens.length;
+        return current >= tokens.length;
     }
 
     function getToken() {
         return tokens[current] || NULL;
-    }
-
-    function nextToken() {
-        return tokens[current + 1] || null;
     }
 
     function traverseStatement() {
@@ -87,9 +83,13 @@ var parse = (tokens) => {
         
         if (getToken().type === 'Keyword' && getToken().value === 'else') {
             current++;
-            validateToken('open_brace');
-            current++;
-            alternate = traverseBlockStatement();
+            if (getToken().type === 'Keyword' && getToken().value === 'if') { // else if	
+                alternate = traverseIfStatement();  // recursive so allow nested	
+            } else {	
+                validateToken('open_brace');	
+                current++;	
+                alternate = traverseBlockStatement();	
+            }
         }
 
 
@@ -441,9 +441,12 @@ var parse = (tokens) => {
         type: 'Root',
         body: [],
     };
-    while (!isEnd()) {
-        AST.body.push(traverseStatement());
-    };
+    
+    while(!isEnd()) {
+        var stmt = traverseStatement();
+        if (stmt && stmt != NULL) 
+            AST.body.push(stmt);
+    }
 
     return AST;
 }
