@@ -4,8 +4,8 @@ const arabicLettersRegex = /^[\u0621-\u064A]$/
 const arabicNumeralsRegex = /^[\u0660-\u0669]$/
 const variableDeclarators = ['var', 'const'];
 const variableDeclaratorsArabic = ['عرف', 'ثبت'];
-const keywords = ['if', 'else', 'return', 'function', 'for'];
-const ArabicKeywords = ['اذا', 'والا', 'ارجع', 'دالة', 'لكل'];
+const keywords = ['if', 'else', 'return', 'function', 'for', 'while'];
+const ArabicKeywords = ['اذا', 'والا', 'ارجع', 'دالة', 'لكل', 'طالما'];
 
 function tokenizer (input) {
     const tokens = [];

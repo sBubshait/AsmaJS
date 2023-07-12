@@ -26,6 +26,8 @@ var parse = (tokens) => {
                     return traverseFunctionDeclaration();
                 else if (getToken() && getToken().value === 'for')
                     return traverseForStatement();
+                else if (getToken() && getToken().value === 'while')
+                    return traverseWhileStatement();
                 return traverse();
             default:
               return traverse();
@@ -177,6 +179,24 @@ var parse = (tokens) => {
             body
         };
 
+    }
+
+    function traverseWhileStatement() {
+        current++; // skip 'while'
+        validateToken('left_parenthesis');
+        current++;
+        let test = traverse(); // e.g., i < 5
+        validateToken('right_parenthesis');
+        current++;
+        validateToken('open_brace');
+        current++;
+        let body = traverseBlockStatement();
+
+        return {
+            type: 'WhileStatement',
+            test,
+            body
+        };
     }
 
     // traverse expressions main function. Starts from the lowest precedence and works its way up.

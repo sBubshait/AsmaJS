@@ -99,3 +99,51 @@ Deno.test("Tokenizer - Assignment", () => {
     ];
     assertEquals(tokenizer(input), expected);
 });
+
+Deno.test("Tokenizer - For Loop", () => {
+    const input = 'for (var i = 0; i < 3; i++) { callback() };';
+    const expected = [
+        {type: 'Keyword', value: 'for'},
+        {type: 'left_parenthesis', value: '('},
+        {type: 'variableDeclarator', value: 'var'},
+        {type: 'Identifier', value: 'i'},
+        {type: 'assignment_operator', value: '='},
+        {type: 'number', value: '0'},
+        {type: 'semicolon', value: ';'},
+        {type: 'Identifier', value: 'i'},
+        {type: 'boolean_operator', value: '<'},
+        {type: 'number', value: '3'},
+        {type: 'semicolon', value: ';'},
+        {type: 'Identifier', value: 'i'},
+        {type: 'increment_decrement_operator', value: '++'},
+        {type: 'right_parenthesis', value: ')'},
+        {type: 'open_brace', value: '{'},
+        {type: 'Identifier', value: 'callback'},
+        {type: 'left_parenthesis', value: '('},
+        {type: 'right_parenthesis', value: ')'},
+        {type: 'close_brace', value: '}'},
+        {type: 'semicolon', value: ';'}
+    ];
+    assertEquals(tokenizer(input), expected);
+});
+
+Deno.test("Tokenizer - While Loop", () => {
+    const input = 'while (x < 10) { ++x; };';
+    const expected = [
+        {type: 'Keyword', value: 'while'},
+        {type: 'left_parenthesis', value: '('},
+        {type: 'Identifier', value: 'x'},
+        {type: 'boolean_operator', value: '<'},
+        {type: 'number', value: '10'},
+        {type: 'right_parenthesis', value: ')'},
+        {type: 'open_brace', value: '{'},
+        {type: 'increment_decrement_operator', value: '++'},
+        {type: 'Identifier', value: 'x'},
+        {type: 'semicolon', value: ';'},
+        {type: 'close_brace', value: '}'},
+        {type: 'semicolon', value: ';'}
+    ];
+    assertEquals(tokenizer(input), expected);
+});
+
+
