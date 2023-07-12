@@ -17,7 +17,7 @@ function generate(node) {
             case 'IfStatement':
                 return generateIfStatement(node);
             case 'AssignmentExpression':
-                return `${generate(node.identifier)} = ${generate(node.value)};`;
+                return `${generate(node.identifier)} ${generate(node.operator)} ${generate(node.value)};`;
             case 'ParenthesizedExpression':
                 return `(${node.params.map(generate).join(', ')})`;
             case 'CallExpression':

@@ -19,6 +19,7 @@ Deno.test("Parser - Object Declaration", () => {
       type: 'Root',
       body: [{
         type: 'AssignmentExpression',
+        operator: '=',
         identifier: { type: 'Identifier', value: 'myObj' },
         value: { 
           type: 'ObjectExpression', 

@@ -256,6 +256,14 @@ function tokenizer (input) {
                 current += 2;
                 continue;
             }
+            if (current < input.length - 1 && input[current + 1] === '=') {
+                tokens.push({
+                    type: 'assignment_operator',
+                    value: `${char}=`,
+                });
+                current += 2;
+                continue;
+            }
             tokens.push({
                 type: 'additiveOperator',
                 value: char,

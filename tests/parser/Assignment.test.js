@@ -15,13 +15,14 @@ Deno.test("Parser - Assignment", () => {
       type: 'Root',
       body: [{
         type: 'AssignmentExpression',
+        operator: '=',
         identifier: { type: 'Identifier', value: 'x' },
         value: { type: 'NumberLiteral', value: 10 }
       }]
     };
   
     assertEquals(AST, expectedAST);
-  });
+});
   
 Deno.test("Parser - chained assignments", () => {
   const tokens = [
@@ -39,12 +40,60 @@ Deno.test("Parser - chained assignments", () => {
     type: 'Root',
     body: [{
       type: 'AssignmentExpression',
+      operator: '=',
       identifier: { type: 'Identifier', value: 'a' },
       value: {
         type: 'AssignmentExpression',
+        operator: '=',
         identifier: { type: 'Identifier', value: 'b' },
         value: { type: 'NumberLiteral', value: 5 }
       }
+    }]
+  };
+
+  assertEquals(AST, expectedAST);
+});
+
+Deno.test("Parser - += operator", () => {
+  const tokens = [
+    { type: 'Identifier', value: 'x' },
+    { type: 'assignment_operator', value: '+=' },
+    { type: 'number', value: 10 },
+    { type: 'semicolon', value: ';' }
+  ];
+
+  const AST = parse(tokens);
+
+  const expectedAST = {
+    type: 'Root',
+    body: [{
+      type: 'AssignmentExpression',
+      operator: '+=',
+      identifier: { type: 'Identifier', value: 'x' },
+      value: { type: 'NumberLiteral', value: 10 }
+    }]
+  };
+
+  assertEquals(AST, expectedAST);
+});
+
+Deno.test("Parser - -= operator", () => {
+  const tokens = [
+    { type: 'Identifier', value: 'x' },
+    { type: 'assignment_operator', value: '-=' },
+    { type: 'number', value: 10 },
+    { type: 'semicolon', value: ';' }
+  ];
+
+  const AST = parse(tokens);
+
+  const expectedAST = {
+    type: 'Root',
+    body: [{
+      type: 'AssignmentExpression',
+      operator: '-=',
+      identifier: { type: 'Identifier', value: 'x' },
+      value: { type: 'NumberLiteral', value: 10 }
     }]
   };
 

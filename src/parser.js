@@ -207,10 +207,12 @@ var parse = (tokens) => {
     function traverseAssignment() {
         var left = traverseLogicalOROperator();
         if (getToken().type === 'assignment_operator' && left.type === 'Identifier') {
+            var operator = getToken().value;
             current++;
             var right = traverseAssignment();
             return {
                 type: 'AssignmentExpression',
+                operator,
                 identifier: left,
                 value: right
             }

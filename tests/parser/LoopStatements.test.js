@@ -53,6 +53,7 @@ Deno.test("Parsing a simple for loop", () => {
             },
             update: {
                 type: 'AssignmentExpression',
+                operator: '=',
                 identifier: { type: 'Identifier', value: 'i'},
                 value: { 
                     type: 'BinaryExpression',

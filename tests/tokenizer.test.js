@@ -128,7 +128,7 @@ Deno.test("Tokenizer - For Loop", () => {
 });
 
 Deno.test("Tokenizer - While Loop", () => {
-    const input = 'while (x < 10) { ++x; };';
+    const input = 'while (x < 10) { x += 1; };';
     const expected = [
         {type: 'Keyword', value: 'while'},
         {type: 'left_parenthesis', value: '('},
@@ -137,8 +137,9 @@ Deno.test("Tokenizer - While Loop", () => {
         {type: 'number', value: '10'},
         {type: 'right_parenthesis', value: ')'},
         {type: 'open_brace', value: '{'},
-        {type: 'increment_decrement_operator', value: '++'},
         {type: 'Identifier', value: 'x'},
+        {type: 'assignment_operator', value: '+='},
+        {type: 'number', value: '1'},
         {type: 'semicolon', value: ';'},
         {type: 'close_brace', value: '}'},
         {type: 'semicolon', value: ';'}
