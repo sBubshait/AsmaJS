@@ -119,10 +119,25 @@ function tokenizer (input) {
 
          if (/[0-9]/.test(char)  || arabicNumeralsRegex.test(char)) {
             let value = '';
-            while (/[0-9]/.test(char) || arabicNumeralsRegex.test(char)) {
+            let decimalPoints = 0;
+
+            while (/[0-9.]/.test(char) || arabicNumeralsRegex.test(char)) {
+                if (char === '.') {
+                    decimalPoints++;
+                    if (decimalPoints > 1) {
+                        throw new TypeError('Illegal decimal point. A number cannot contain more than one decimal point.');
+                    }
+                }
+
                 value += convertArabicNumeralsToEnglish(char);
                 char = input[++current];
             }
+
+            // Allow trailing decimal point
+            if (value[value.length - 1] === '.') {
+                value += '00';
+            }
+
             tokens.push({
                 type: 'number',
                 value: value.toString(),

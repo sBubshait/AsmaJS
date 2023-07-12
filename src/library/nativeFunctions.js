@@ -1,7 +1,7 @@
 const nativeFunctions = ["print", "prompt", "toInteger", "toDecimal"];
 const nativeFunctionsArabic = ["اطبع", "اسال", "الى-صحيح", "الى-عشري"];
 
-import generate from './generator.js';
+import generate from '../generator.js';
 
 const generateNativeFunctions = (node) => {
     switch (node.callee.value) {

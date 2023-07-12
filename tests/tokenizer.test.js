@@ -2,10 +2,13 @@ import { assertEquals } from "https://deno.land/std@0.117.0/testing/asserts.ts";
 import tokenizer from "../src/tokenizer.js";
 
 Deno.test("Tokenizer - Numbers", () => {
-    const input = '123 5';
+    const input = '123 5 7.5 3.45 1.';
     const expected = [
         { type: 'number', value: '123' },
-        { type: 'number', value: '5' }
+        { type: 'number', value: '5' },
+        { type: 'number', value: '7.5' },
+        { type: 'number', value: '3.45' },
+        { type: 'number', value: '1.00' }
     ];
     assertEquals(tokenizer(input), expected);
 });

@@ -1,5 +1,5 @@
 // generate JS code from AST
-import { generateNativeFunctions } from './nativeFunctions.js';
+import { generateNativeFunctions } from './library/nativeFunctions.js';
 
 function generate(node) {
         if (node.type === 'Root' && node.body == null) {

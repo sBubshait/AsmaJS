@@ -1,4 +1,4 @@
-import {nativeFunctions, nativeFunctionsArabic} from './nativeFunctions.js';
+import {nativeFunctions, nativeFunctionsArabic} from './library/nativeFunctions.js';
 
 const NULL = {type: 'null', value: null};
 
