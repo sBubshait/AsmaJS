@@ -36,6 +36,8 @@ function generate(node) {
                 return `${generate(node.left)} ${node.operator} ${generate(node.right)}`;
             case 'ObjectExpression':
                 return `{${node.properties.map(generate).join(', ')}}`;
+            case 'ArrayExpression':
+                return `[${node.elements.map(generate).join(', ')}]`;
             case 'Property':
                 return `${generate(node.key)}: ${generate(node.value)}`;
             case 'NumberLiteral':

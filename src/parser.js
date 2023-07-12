@@ -467,6 +467,23 @@ var parse = (tokens) => {
         return parsed;
     }
 
+    function parseArray() {
+        current++; // skip '['
+        var elements = [];
+        while (getToken().type !== 'close_bracket' && !isEnd()) {
+            elements.push(traverse());
+            if (getToken().type === 'comma') {
+                current++;
+            }
+        }
+        validateToken('close_bracket');
+        current++;
+        return {
+            type: 'ArrayExpression',
+            elements: elements
+        };
+    }
+
     function traversePrimary() {
         var token = getToken();
         if (!token) return false;
@@ -507,6 +524,9 @@ var parse = (tokens) => {
         if (token.type === 'semicolon') {
             current++;
             return NULL;
+        }
+        if (token.type === 'open_bracket') {
+            return parseArray();
         }
         throw new TypeError(`Unable to parse. Unknown Token: '${token.value}' of type '${token.type}'`);
     }
