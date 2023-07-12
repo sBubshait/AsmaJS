@@ -22,6 +22,8 @@ function generate(node) {
                 return `(${node.params.map(generate).join(', ')})`;
             case 'CallExpression':
                 return `${generate(node.callee)}(${node.arguments.map(generate).join(', ')})`;
+            case 'UpdateExpression':
+                return node.prefix ? `${node.operator}${generate(node.argument)}` : `${generate(node.argument)}${node.operator}`;
             case 'MemberExpression':
                 return `${generate(node.object)}.${generate(node.property)}`;
             case 'LogicalExpression':

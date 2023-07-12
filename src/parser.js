@@ -24,6 +24,8 @@ var parse = (tokens) => {
                     return traverseIfStatement();
                 else if (getToken() && getToken().value === 'function')
                     return traverseFunctionDeclaration();
+                else if (getToken() && getToken().value === 'for')
+                    return traverseForStatement();
                 return traverse();
             default:
               return traverse();
@@ -47,8 +49,8 @@ var parse = (tokens) => {
         validateToken('assignment_operator');
         current++;
         var value = traverse();
-        validateToken('semicolon');
-        current++;
+        // validateToken('semicolon');
+        // current++;
         return {
             type: 'VariableDeclaration',
             declarator: declarator.value,
@@ -105,7 +107,10 @@ var parse = (tokens) => {
     function traverseBlockStatement() {
         var body = [];
         while (getToken().type !== 'close_brace' && !isEnd()) {
-            body.push(traverseStatement());
+            let stmt = traverseStatement();
+            if (stmt != NULL) {
+                body.push(stmt);
+            }
         }
 
         validateToken('close_brace');
@@ -145,6 +150,33 @@ var parse = (tokens) => {
         }
 
         
+    }
+
+    function traverseForStatement() {
+        current++; // skip 'for'
+        validateToken('left_parenthesis');
+        current++;
+        let init = traverseStatement(); // e.g., var i = 0
+        validateToken('semicolon');
+        current++;
+        let test = traverse(); // e.g., i < 5
+        validateToken('semicolon');
+        current++;
+        let update = traverse(); // e.g., i = i + 1 or i++;
+        validateToken('right_parenthesis');
+        current++;
+        validateToken('open_brace');
+        current++;
+        let body = traverseBlockStatement();
+        
+        return {
+            type: 'ForStatement',
+            init,
+            test,
+            update,
+            body
+        };
+
     }
 
     // traverse expressions main function. Starts from the lowest precedence and works its way up.
@@ -364,6 +396,18 @@ var parse = (tokens) => {
     
 
     function traverseUnaryExpressions() {
+        // Prefix Increment/Decrement = UpdateExpression
+        if (getToken().type === 'increment_decrement_operator') {
+            const operator = getToken().value;
+            current++;
+            return {
+                type: 'UpdateExpression',
+                operator,
+                argument: traversePostfixUnaryExpressions(),
+                prefix: true
+            };
+        }
+
         if (getToken().type === 'not_operator') {
             current++;
             return {
@@ -383,7 +427,22 @@ var parse = (tokens) => {
             };
         }
 
-        return traverseCallee();
+        return traversePostfixUnaryExpressions();
+    }
+
+    function traversePostfixUnaryExpressions() {
+        var parsed = traverseCallee();
+        if (getToken().type === 'increment_decrement_operator') {
+            const operator = getToken().value;
+            current++;
+            return {
+                type: 'UpdateExpression',
+                operator,
+                argument: parsed,
+                prefix: false
+            };
+        }
+        return parsed;
     }
 
     function traversePrimary() {
@@ -410,7 +469,7 @@ var parse = (tokens) => {
             current++;
             return {
                 type: 'NumberLiteral',
-                value: token.value,
+                value: Number(token.value),
             };
         }
         if (token.type === 'left_parenthesis') {

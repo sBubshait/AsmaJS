@@ -4,8 +4,8 @@ const arabicLettersRegex = /^[\u0621-\u064A]$/
 const arabicNumeralsRegex = /^[\u0660-\u0669]$/
 const variableDeclarators = ['var', 'const'];
 const variableDeclaratorsArabic = ['عرف', 'ثبت'];
-const keywords = ['if', 'else', 'return', 'function'];
-const ArabicKeywords = ['اذا', 'والا', 'ارجع', 'دالة'];
+const keywords = ['if', 'else', 'return', 'function', 'for'];
+const ArabicKeywords = ['اذا', 'والا', 'ارجع', 'دالة', 'لكل'];
 
 function tokenizer (input) {
     const tokens = [];
@@ -125,7 +125,7 @@ function tokenizer (input) {
             }
             tokens.push({
                 type: 'number',
-                value,
+                value: value.toString(),
             });
             continue;
         }
@@ -248,6 +248,14 @@ function tokenizer (input) {
         }
 
         if (["+", "-"].includes(char)) {
+            if (current < input.length - 1 && input[current + 1] === char) {
+                tokens.push({
+                    type: 'increment_decrement_operator',
+                    value: `${char}${char}`,
+                });
+                current += 2;
+                continue;
+            }
             tokens.push({
                 type: 'additiveOperator',
                 value: char,
