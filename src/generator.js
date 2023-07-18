@@ -9,15 +9,19 @@ function generate(node) {
             case 'Root':
                 return node.body.map(generate).join('\n');
             case 'VariableDeclaration':
-                return `${node.declarator || 'var'} ${generate(node.identifier)}${node.value ? ' = ' + generate(node.value) : ''};`;
+                return `${node.declarator || 'var'} ${generate(node.identifier)}${node.value ? ' = ' + generate(node.value) : ''}`;
             case 'FunctionDeclaration':
-                return `function ${generate(node.id)}(${node.params.map(generate).join(', ')}) {${node.body.body.map(generate).join('\n')}}`;
+                return `function ${generate(node.id)}(${node.params.map(generate).join(', ')}) {${node.body.body.length > 0 ? '\n' + node.body.body.map(generate).join('\n') + '\n' : ''}}`;
             case 'ReturnStatement':
                 return `return ${generate(node.argument)};`;
             case 'IfStatement':
                 return generateIfStatement(node);
+            case 'ForStatement':
+                return `for (${generate(node.init)}; ${generate(node.test)}; ${generate(node.update)}) {${node.body.body.length > 0 ? '\n' + node.body.body.map(generate).join('\n') + '\n' : ''}}`;
+            case 'WhileStatement':
+                return `while (${generate(node.test)}) {${node.body.body.length > 0 ? '\n' + node.body.body.map(generate).join('\n') + '\n' : ''}}`;
             case 'AssignmentExpression':
-                return `${generate(node.identifier)} ${generate(node.operator)} ${generate(node.value)};`;
+                return `${generate(node.identifier)} ${node.operator} ${generate(node.value)};`;
             case 'ParenthesizedExpression':
                 return `(${node.params.map(generate).join(', ')})`;
             case 'CallExpression':
@@ -51,18 +55,19 @@ function generate(node) {
             case 'null':
                 return '';
             default:
+                console.log(node);
                 throw new TypeError("Unable to generate: " + node.type);
         }
 
 }
 
 function generateIfStatement(node) {
-    let code = `if (${generate(node.test)}) {\n${node.consequent.body.map(generate).join('\n')}\n}`;
+    let code = `if (${generate(node.test)}) {${node.consequent.body && node.consequent.body.length > 0 ? "\n" : ""}${node.consequent.body.map(generate).join('\n')}${node.consequent.body && node.consequent.body.length > 0 ? "\n" : ""}}`;
     if (node.alternate) {
         if (node.alternate.type === 'IfStatement') {
             code += ` else ${generateIfStatement(node.alternate)}`;
         } else {
-            code += ` else {\n${node.alternate.body.map(generate).join('\n')}\n}`;
+            code += ` else {${node.alternate.body && node.alternate.body.length > 0 ? "\n" : ""}${node.alternate.body.map(generate).join('\n')}${node.alternate.body && node.alternate.body.length > 0 ? "\n" : ""}}`;
         }
     }
     return code;
