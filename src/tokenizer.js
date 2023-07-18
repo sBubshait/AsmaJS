@@ -10,6 +10,9 @@ const ArabicKeywords = ['اذا', 'والا', 'ارجع', 'دالة', 'لكل', 
 function tokenizer (input) {
     const tokens = [];
     let current = 0;
+
+    // ignore comments:
+    input = stripComments(input);
     while (current < input.length) {
         var char = input[current];
         
@@ -306,12 +309,46 @@ function tokenizer (input) {
     return tokens;
 }
 
+// Helper methods:
+
 function convertArabicNumeralsToEnglish (input) {
     return input.replace(/[٠١٢٣٤٥٦٧٨٩]/g, function (d) {
         return d.charCodeAt(0) - 1632;
     }).replace(/[۰۱۲۳۴۵۶۷۸۹]/g, function (d) {
         return d.charCodeAt(0) - 1776;
     });
+}
+
+function stripComments(input) {
+    let lines = input.split('\n');
+    let inMultilineComment = false;
+    let output = '';
+
+    for (let line of lines) {
+        let trimmed = line.trim();
+
+        if (!inMultilineComment && trimmed.startsWith('/*')) {
+            inMultilineComment = true;
+        }
+
+        if (inMultilineComment && trimmed.endsWith('*/')) {
+            inMultilineComment = false;
+            continue;
+        }
+
+        if (inMultilineComment) {
+            continue;
+        }
+
+        if (trimmed.startsWith('//')) {
+            continue;
+        }
+
+        // not a comment. Well, this line is but not the line in the code (:
+        output += line + '\n';
+    }
+
+    return output;
 }
 
 export default tokenizer;

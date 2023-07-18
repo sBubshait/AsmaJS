@@ -1,0 +1,22 @@
+
+// Single line comments start with // and everything following it on the same line is ignored
+// The following line of code will not execute because it's commented out
+// print("This line is commented out and will not be printed.");
+
+// Let's print a line of text. This line will execute because it's not commented out.
+print("Hello, world!");
+
+/*
+Multiline comments start with /* and end with */.
+Everything in between, even if it spans multiple lines, is ignored.
+For example, the following lines of code will not execute because they're inside a multiline comment.
+
+print("This line is inside a multiline comment and will not be printed.");
+print("This line is also inside a multiline comment and will not be printed.");
+
+*/
+
+// Now we're outside the multiline comment, so the following line of code will execute.
+print("Goodbye, world!");
+
+// End of test file
